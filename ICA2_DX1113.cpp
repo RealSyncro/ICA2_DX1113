@@ -15,10 +15,15 @@ using std::cout;
 using std::cin;
 using std::endl;
 
+void prtMessage() {
+    cout << "Hello World!\n";
+}
+
+
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    prtMessage();
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
