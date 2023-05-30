@@ -4,26 +4,58 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <string>
-
 #include <iostream>
 #include <ios> [Stream 10]
 #include <limits> [Get Numeric Limits]
 #include <stdlib.h>
 #include <iomanip>
 
+
 using std::cout;
 using std::cin;
+using std::string;
 using std::endl;
 
 void prtMessage() {
     cout << "Hello World!\n";
 }
 
+void Welcome() {
+    string storeMessage[] = { "Welcome to Sudoku!\n", "What difficulty would you like to select?\n", "1. Easy\n2. Normal\n3. Hard\n\n" };
+    cout << storeMessage[0] << storeMessage[1] << storeMessage[2];
+}
+
+void DifficultySelector() {
+    string difficultyInput; 
+    string storeDifficulty[] = { "\nEasy\n", "\nMedium\n", "\nHard\n" };
+
+    cout << "Please select a difficulty.\n";
+    cin >> difficultyInput;
+    if (difficultyInput == "1") {
+        cout << storeDifficulty[0];
+    }
+    else if (difficultyInput == "2") {
+        cout << storeDifficulty[1];
+    }
+    else if (difficultyInput == "3") {
+        cout << storeDifficulty[2];
+    }
+    else {
+        cout << "\nError! Wrong Input!\n";
+        DifficultySelector();
+    }
+}
+
 
 
 int main()
 {
-    prtMessage();
+
+    while (true) {
+        Welcome();
+        DifficultySelector();
+
+    }
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
