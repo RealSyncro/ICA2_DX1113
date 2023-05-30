@@ -16,45 +16,86 @@ using std::cin;
 using std::string;
 using std::endl;
 
-void prtMessage() {
-    cout << "Hello World!\n";
+string F1; 
+
+void clearscr() {
+    cout << "\033[2J\033[1;1H";
 }
 
 void Welcome() {
-    string storeMessage[] = { "Welcome to Sudoku!\n", "What difficulty would you like to select?\n", "1. Easy\n2. Normal\n3. Hard\n\n" };
-    cout << storeMessage[0] << storeMessage[1] << storeMessage[2];
-}
+    string userInputStart;
+    string storeMessage[] = { "Welcome to Sudoku!\n", "Please select an option.\n", "1. Play Sudoku\n", "2. How to Play Sudoku\n", "1. Easy\n2. Normal\n3. Hard\n\n" };
+    cout << storeMessage[0] << storeMessage[1] << endl << storeMessage[2] << storeMessage[3] << endl;
 
-void DifficultySelector() {
-    string difficultyInput; 
-    string storeDifficulty[] = { "\nEasy\n", "\nMedium\n", "\nHard\n" };
+    cin >> userInputStart; 
+    if (userInputStart == "1") {
+        clearscr();
+        cout << "You chose the play option.\n";
+        ::F1 = "1";
+    }
+    else if (userInputStart == "2") {
+        clearscr();
+        cout << "You chose tutorial option.\n";
+        ::F1 = "2";
+    }
+    else if (userInputStart == "q") {
 
-    cout << "Please select a difficulty.\n";
-    cin >> difficultyInput;
-    if (difficultyInput == "1") {
-        cout << storeDifficulty[0];
-    }
-    else if (difficultyInput == "2") {
-        cout << storeDifficulty[1];
-    }
-    else if (difficultyInput == "3") {
-        cout << storeDifficulty[2];
     }
     else {
-        cout << "\nError! Wrong Input!\n";
-        DifficultySelector();
+        cout << "Error! Try again.\n";
+        Welcome();
     }
 }
 
+void tutorial(){
+   
+}
 
+
+
+void puzzleValidation() {
+    
+}
+
+int puzzleEasyAns[9][9]{ {1,2,3,4,5,6,7,8,9}, {1,2,3,4,5,6,7,8,9}, {1,2,3,4,5,6,7,8,9}, 
+                         {1,2,3,4,5,6,7,8,9}, {1,2,3,4,5,6,7,8,9}, {1,2,3,4,5,6,7,8,9}, 
+                         {1,2,3,4,5,6,7,8,9}, {1,2,3,4,5,6,7,8,9}, {1,2,3,4,5,6,7,8,9} };
 
 int main()
 {
-
+   
     while (true) {
         Welcome();
-        DifficultySelector();
 
+
+
+        if (F1 == "1") {
+            while (true) {
+                string difficultyInput;
+                string storeDifficulty[] = { "\nEasy\n", "\nMedium\n", "\nHard\n" };
+
+                cout << "Please select a difficulty.\n";
+                cin >> difficultyInput;
+
+                if (difficultyInput == "1") {
+                    cout << storeDifficulty[0];
+
+                }
+                else if (difficultyInput == "2") {
+                    cout << storeDifficulty[1];
+                }
+                else if (difficultyInput == "3") {
+                    cout << storeDifficulty[2];
+                }
+                else {
+                    cout << "\nError! Wrong Input!\n";
+                }
+            }
+        }
+
+        if (F1 == "q") {
+            break;
+        }
     }
 }
 
