@@ -5,8 +5,8 @@
 #include <cmath>
 #include <string>
 #include <iostream>
-#include <ios> [Stream 10]
-#include <limits> [Get Numeric Limits]
+#include <ios> 
+#include <limits> 
 #include <stdlib.h>
 #include <iomanip>
 
@@ -34,7 +34,7 @@ void Welcome() {
     }
     else if (userInputStart == "2") {
         clearscr();
-        cout << "You chose tutorial option.\n";
+        cout << "You chose tutorial option.\nEnter input to go back to main menu.\n";
         ::F1 = userInputStart;
     }
     else if (userInputStart == "q") {
@@ -49,9 +49,12 @@ void Welcome() {
 }
 
 void tutorial() {
+    string backToMenu;
     string instructions[] = { "\nIn Sudoku, the objective is to fill a 9 × 9 grid with digits so that each column, each row," , "\n(also called 'boxes', 'blocks', or 'regions') contain all of the digits from 1 to 9." , 
-                              "\nOnce all the grid has been filled in correctly, you will win the game.\n\n" };
+                              "\nOnce all the grid has been filled in correctly, you win the game.\n\n" };
     cout << instructions[0] << instructions[1] << instructions[2];
+    cin >> backToMenu;
+    clearscr();
 }
 
 
@@ -61,37 +64,62 @@ void puzzleValidation() {
     
 }
 
-int puzzleEasyAns[9][9]{ {1,2,3,4,5,6,7,8,9}, {1,2,3,4,5,6,7,8,9}, {1,2,3,4,5,6,7,8,9}, 
-                         {1,2,3,4,5,6,7,8,9}, {1,2,3,4,5,6,7,8,9}, {1,2,3,4,5,6,7,8,9}, 
-                         {1,2,3,4,5,6,7,8,9}, {1,2,3,4,5,6,7,8,9}, {1,2,3,4,5,6,7,8,9} };
+char puzzleEasyAns[9][9]{ {'1','2','3','4','5','6','7','8','9'},
+                          {'1','2','3','4','5','6','7','8','9'},
+                          {'1','2','3','4','5','6','7','8','9'},
+                          {'1','2','3','4','5','6','7','8','9'},
+                          {'1','2','3','4','5','6','7','8','9'},
+                          {'1','2','3','4','5','6','7','8','9'},
+                          {'1','2','3','4','5','6','7','8','9'},
+                          {'1','2','3','4','5','6','7','8','9'},
+                          {'1','2','3','4','5','6','7','8','9'} };
+
+
+char puzzleEasy[9][9]{ {'x','-','-','-','-','-','-','-','-'},
+                       {'-','-','-','-','-','-','-','-','-'},
+                       {'-','-','-','-','-','-','-','-','-'},
+                       {'-','-','-','-','-','-','-','-','-'},
+                       {'-','-','-','-','-','-','-','-','-'},
+                       {'-','-','-','-','-','-','-','-','-'},
+                       {'-','-','-','-','-','-','-','-','-'},
+                       {'-','-','-','-','-','-','-','-','-'},
+                       {'-','-','-','-','-','-','-','-','-'} };
+
+
+char move;
+int curRow = 0;
+int curCol = 0;
 
 int main()
 {
-   
     while (true) {
         Welcome();
-
-
 
         if (F1 == "1") {
             while (true) {
                 string difficultyInput;
-                string storeDifficulty[] = { "\nEasy\n", "\nMedium\n", "\nHard\n" };
+                string diffmsg = "\nYou have chosen ";
+                string storeDifficulty[] = { "1. Easy", "2. Medium", "3. Hard" };
 
-                cout << "Please select a difficulty.\n";
+                cout << "Please select a difficulty.\nEnter 'q' if you wish to go back to main menu.\n\n";
+                for (int i = 0; i < 3; i++) {
+                    cout << "\n" << storeDifficulty[i];
+                }
+                cout << "\n\n";
+
                 cin >> difficultyInput;
+                clearscr();
 
                 if (difficultyInput == "1") {
-                    cout << storeDifficulty[0];
-
+                    cout << diffmsg << "\n" << storeDifficulty[0] << "\n\n";
                 }
                 else if (difficultyInput == "2") {
-                    cout << storeDifficulty[1];
+                    cout << diffmsg << "\n" << storeDifficulty[1] << "\n\n";
                 }
                 else if (difficultyInput == "3") {
-                    cout << storeDifficulty[2];
+                    cout << diffmsg << "\n" << storeDifficulty[2] << "\n\n";
                 }
-                else if (difficultyInput == "4") {
+                else if (difficultyInput == "q") {
                     cout << "Exit Loop";
                     clearscr();
                     break;
@@ -104,6 +132,7 @@ int main()
 
         if (F1 == "2") {
             tutorial();
+            
         }
 
         if (F1 == "q") {
