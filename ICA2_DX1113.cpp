@@ -10,13 +10,12 @@
 #include <stdlib.h>
 #include <iomanip>
 
-
 using std::cout;
 using std::cin;
 using std::string;
 using std::endl;
 
-string F1; 
+string F1, F2;
 
 void clearscr() {
     cout << "\033[2J\033[1;1H";
@@ -24,32 +23,37 @@ void clearscr() {
 
 void Welcome() {
     string userInputStart;
-    string storeMessage[] = { "Welcome to Sudoku!\n", "Please select an option.\n", "1. Play Sudoku\n", "2. How to Play Sudoku\n", "1. Easy\n2. Normal\n3. Hard\n\n" };
-    cout << storeMessage[0] << storeMessage[1] << endl << storeMessage[2] << storeMessage[3] << endl;
+    string storeMessage[] = { "Welcome to Sudoku!\n", "Enter 'q' to exit the program.\n", "Please select an option.\n\n" , "1. Play Sudoku\n", "2. How to Play Sudoku\n" };
+    cout << storeMessage[0] << storeMessage[1] << endl << storeMessage[2] << storeMessage[3] << storeMessage[4] << endl;
 
     cin >> userInputStart; 
     if (userInputStart == "1") {
         clearscr();
         cout << "You chose the play option.\n";
-        ::F1 = "1";
+        ::F1 = userInputStart;
     }
     else if (userInputStart == "2") {
         clearscr();
         cout << "You chose tutorial option.\n";
-        ::F1 = "2";
+        ::F1 = userInputStart;
     }
     else if (userInputStart == "q") {
-
+        ::F1 = userInputStart;
+        cout << "\n> You have exited the program.\n";
     }
     else {
-        cout << "Error! Try again.\n";
+        clearscr();
+        cout << "Error! Try again.\n\n";
         Welcome();
     }
 }
 
-void tutorial(){
-   
+void tutorial() {
+    string instructions[] = { "\nIn Sudoku, the objective is to fill a 9 × 9 grid with digits so that each column, each row," , "\n(also called 'boxes', 'blocks', or 'regions') contain all of the digits from 1 to 9." , 
+                              "\nOnce all the grid has been filled in correctly, you will win the game.\n\n" };
+    cout << instructions[0] << instructions[1] << instructions[2];
 }
+
 
 
 
@@ -87,14 +91,23 @@ int main()
                 else if (difficultyInput == "3") {
                     cout << storeDifficulty[2];
                 }
+                else if (difficultyInput == "4") {
+                    cout << "Exit Loop";
+                    clearscr();
+                    break;
+                }
                 else {
                     cout << "\nError! Wrong Input!\n";
                 }
             }
         }
 
+        if (F1 == "2") {
+            tutorial();
+        }
+
         if (F1 == "q") {
-            break;
+            return 0;
         }
     }
 }
