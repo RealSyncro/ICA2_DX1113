@@ -19,7 +19,10 @@ using std::endl;
 ////////                     Global Variables                          ///////
 /****************************************************************************/
 
+//Decision Control Variable
 string F1, F2;
+
+//Player Movement Variable
 char move;
 int curRow = 0;
 int curCol = 0;
@@ -75,8 +78,9 @@ void Welcome() {
     }
 
     cout << endl;
-
     cin >> optionIn;
+
+    //Check User Selected Option
     if (optionIn == "1") {
         clearscr();
         cout << "You chose the play option.\n";
@@ -114,8 +118,11 @@ void tutorial() {
 
 void puzzleValidation(char userMap[9][9]) {
     int gridCorrect = 0;
+
+    //Traverse through all elements in an array
     for (int row = 0; row < 9; row++) {
         for (int col = 0; col < 9; col++) {
+            //Check if the element player inputted matches the sudoku element answer
             if (userMap[row][col] == ::puzzleEasyAns[row][col]) {
                 gridCorrect++;
                 continue;
@@ -127,11 +134,74 @@ void puzzleValidation(char userMap[9][9]) {
         };
     };
 
+    //Display victory message if all elements matches sudoku array
     if (gridCorrect == 81) {
         cout << "\nYou Win the Sudoku!\n";
     }
 }
 
+void displayPuzzle(char userMap[9][9]) {
+    string instructions[] = { "Move Up - [W]", "Move Left - [A]", "Move Down - [S]", "Move Right - [D]", "Insert Number - [I]"};
+    for (int row = 0; row < 9; row++) {
+        for (int col = 0; col < 9; col++) {
+            cout << userMap[row][col] << " , ";
+        }
+        cout << endl;
+    }
+    cout << endl;
+    for (int i = 0; i < sizeof(instructions) / sizeof(string); i++) {
+        cout << instructions[i] << endl;
+    }
+    cout << endl;
+}
+
+void userControl(char userMap[9][9]) {
+    while (true) {
+        string userInput;
+        string userInNum;
+
+        extern int curRow, curCol;
+        int preRow = curRow;
+        int preCol = curCol;
+        userMap[curRow][curCol] = 'X';
+        cout << "Input : ";
+        cin >> userInput;
+
+        //Move Up
+        if (userInput == "W") { 
+            curRow--;
+            if (curRow < 0)
+                curRow = 3;
+        }
+        //Move Left
+        else if (userInput == "A") {
+            curCol--;
+            if (curCol < 0)
+                curCol = 3;
+        }
+        //Move Down
+        else if (userInput == "S") {
+            curRow++;
+            if (curRow > 2)
+                curRow++;
+            curRow %= 3;
+        }
+        //Move Right
+        else if (userInput == "D") {
+            curCol++;
+                curCol %= 4;
+        }
+        else if (userInput == "I") {
+            cout << endl << "Please Insert a number: ";
+            cin >> userInNum;
+        }
+        else {
+            cout << "Error Input!";
+        }
+        clearscr();
+        displayPuzzle(puzzleEasy);
+    };
+}
 
 
 /****************************************************************************/
@@ -139,6 +209,7 @@ void puzzleValidation(char userMap[9][9]) {
 /****************************************************************************/
 int main()
 {
+    //Loop Jump Starts the Program
     while (true) {
         Welcome();
 
@@ -149,7 +220,7 @@ int main()
                 string storeDifficulty[] = { "1. Easy", "2. Medium", "3. Hard" };
 
                 cout << "Please select a difficulty.\n[Enter 'q' if you wish to go back to main menu.]\n";
-                for (int i = 0; i < 3; i++) {
+                for (int i = 0; i < sizeof(storeDifficulty) / sizeof(string); i++) {
                     cout << "\n" << storeDifficulty[i];
                 }
                 cout << "\n\n";
@@ -157,12 +228,18 @@ int main()
                 cin >> difficultyInput;
                 clearscr();
 
+                //Check Difficulty Selection
                 if (difficultyInput == "1") {
                     cout << diffmsg << "\n" << storeDifficulty[0] << "\n\n";
                     puzzleValidation(puzzleEasyTest);
                 }
                 else if (difficultyInput == "2") {
+                    int L1 = 1;
                     cout << diffmsg << "\n" << storeDifficulty[1] << "\n\n";
+                    displayPuzzle(puzzleEasy);
+                    userControl(puzzleEasy);
+                   
+
                 }
                 else if (difficultyInput == "3") {
                     cout << diffmsg << "\n" << storeDifficulty[2] << "\n\n";
@@ -178,15 +255,25 @@ int main()
             }
         }
 
+        //Tutorial on How to Play Sudoku
         if (F1 == "2") {
             tutorial();
         }
 
+        //Quit Program
         if (F1 == "q") {
             return 0;
         }
     }
+    //Loop End
 }
+
+//1. Explain Tutorial
+//2. Display Puzzle - Key Inputs, Grace Mistake Indicators
+//3. Player Movement
+//4. Player Input Blank
+//5. Option to confirm
+
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
