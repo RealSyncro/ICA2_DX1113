@@ -31,18 +31,18 @@ int curCol = 0;
 /****************************************************************************/
 ////////                      Sudoku Puzzles                        //////////
 /****************************************************************************/
-char puzzleEasyAns[9][9]{ {'1','2','3','4','5','6','7','8','9'},
-                          {'1','2','3','4','5','6','7','8','9'},
-                          {'1','2','3','4','5','6','7','8','9'},
-                          {'1','2','3','4','5','6','7','8','9'},
-                          {'1','2','3','4','5','6','7','8','9'},
-                          {'1','2','3','4','5','6','7','8','9'},
-                          {'1','2','3','4','5','6','7','8','9'},
-                          {'1','2','3','4','5','6','7','8','9'},
-                          {'1','2','3','4','5','6','7','8','9'} };
+const char puzzleEasyAns[9][9]{ {'1','2','3','4','5','6','7','8','9'},
+                                {'1','2','3','4','5','6','7','8','9'},
+                                {'1','2','3','4','5','6','7','8','9'},
+                                {'1','2','3','4','5','6','7','8','9'},
+                                {'1','2','3','4','5','6','7','8','9'},
+                                {'1','2','3','4','5','6','7','8','9'},
+                                {'1','2','3','4','5','6','7','8','9'},
+                                {'1','2','3','4','5','6','7','8','9'},
+                                {'1','2','3','4','5','6','7','8','9'} };
 
 
-char puzzleEasy[9][9]{ {'x','-','-','-','-','-','-','-','-'},
+char puzzleEasy[9][9]{ {'X','-','-','-','-','-','-','-','-'},
                        {'-','-','-','-','-','-','-','-','-'},
                        {'-','-','-','-','-','-','-','-','-'},
                        {'-','-','-','-','-','-','-','-','-'},
@@ -106,7 +106,12 @@ void tutorial() {
     string menu;
     string instructions[] = { "\nIn Sudoku, the objective is to fill a 9 × 9 grid with digits so that each column, each row," , 
                               "\n(also called 'boxes', 'blocks', or 'regions') contain all of the digits from 1 to 9." , 
-                              "\nOnce all the grid has been filled in correctly, you win the game.\n\n" };
+                              "\nOnce all the grid has been filled in correctly, you win the game.\n",
+                              "\nHow to play Sudoku: ",
+                              "\n1. Navigate through the grids through entering [W,A,S,D] keys into the screen.",
+                              "\n2. Enter [I] to insert a value into the selected grid.",
+                              "\n3. Enter a number into the selected grid.",
+                              "\n4. Repeat step 1-3 until all grids are filled.\n\n",};
 
     for (int i = 0; i < sizeof(instructions) / sizeof(string); i++) {
         cout << instructions[i];
@@ -164,32 +169,34 @@ void userControl(char userMap[9][9]) {
         int preRow = curRow;
         int preCol = curCol;
         userMap[curRow][curCol] = 'X';
+        displayPuzzle(puzzleEasy);
+        cout << "You are currently at row: " << curRow << ", col : " << curCol << endl;
         cout << "Input : ";
         cin >> userInput;
+        
 
         //Move Up
-        if (userInput == "W") { 
+        if (userInput == "w") { 
             curRow--;
             if (curRow < 0)
-                curRow = 3;
+                curRow = 8;
         }
         //Move Left
-        else if (userInput == "A") {
+        else if (userInput == "a") {
             curCol--;
             if (curCol < 0)
-                curCol = 3;
+                curCol = 8;
         }
         //Move Down
-        else if (userInput == "S") {
+        else if (userInput == "s") {
             curRow++;
-            if (curRow > 2)
-                curRow++;
-            curRow %= 3;
+            if (curRow > 8)
+            curRow = 0;
         }
         //Move Right
-        else if (userInput == "D") {
+        else if (userInput == "d") {
             curCol++;
-                curCol %= 4;
+                curCol %= 9;
         }
         else if (userInput == "I") {
             cout << endl << "Please Insert a number: ";
@@ -199,7 +206,7 @@ void userControl(char userMap[9][9]) {
             cout << "Error Input!";
         }
         clearscr();
-        displayPuzzle(puzzleEasy);
+        userMap[preRow][preCol] = ' - '; //clear
     };
 }
 
@@ -236,7 +243,6 @@ int main()
                 else if (difficultyInput == "2") {
                     int L1 = 1;
                     cout << diffmsg << "\n" << storeDifficulty[1] << "\n\n";
-                    displayPuzzle(puzzleEasy);
                     userControl(puzzleEasy);
                    
 
