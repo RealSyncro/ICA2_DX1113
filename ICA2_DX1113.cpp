@@ -26,7 +26,7 @@ string F1, F2;
 int curRow = 0;  int curCol = 0;
 
 //Win Condition Variable
-int winPuzzle; int GraceCount; int wrongConfirmation;
+int winPuzzle; int GraceCounter; int errorConfirmation;
 
 
 /****************************************************************************/
@@ -44,15 +44,15 @@ const char puzzleEA1[9][9]{ {'1','2','3','4','5','6','7','8','9'},
 
 char userGrid[9][9];
 
-char userAnsNoX[9][9]{ {'1','2','3','4','5','6','7','8','9'},
-                       {'1','2','3','4','5','6','7','8','9'},
-                       {'1','2','3','4','5','6','7','8','9'},
-                       {'1','2','3','4','5','6','7','8','9'},
-                       {'1','2','3','4','5','6','7','8','9'},
-                       {'1','2','3','4','5','6','7','8','9'},
-                       {'1','2','3','4','5','6','7','8','9'},
-                       {'1','2','3','4','5','6','7','8','9'},
-                       {'1','2','3','4','5','6','7','8','8'} };
+char puzzleEU1[9][9]{ {'1','2','3','4','5','6','7','8','9'},
+                      {'1','2','3','4','5','6','7','8','9'},
+                      {'1','2','3','4','5','6','7','8','9'},
+                      {'1','2','3','4','5','6','7','8','9'},
+                      {'1','2','3','4','5','6','7','8','9'},
+                      {'1','2','3','4','5','6','7','8','9'},
+                      {'1','2','3','4','5','6','7','8','9'},
+                      {'1','2','3','4','5','6','7','8','9'},
+                      {'1','2','3','4','5','6','7','8','8'} };
 
 
 
@@ -63,6 +63,7 @@ char userAnsNoX[9][9]{ {'1','2','3','4','5','6','7','8','9'},
 /****************************************************************************/
 /****************************************************************************/
 
+//Print Functions 
 
 /****************************************************************************/
 ////////                    Decision Functions                      //////////
@@ -119,6 +120,7 @@ void tutorial() {
     for (int i = 0; i < sizeof(instructions) / sizeof(string); i++) {
         cout << instructions[i];
     }
+
     cin >> *exit;
     clearscr();
     delete exit;
@@ -130,13 +132,13 @@ void tutorial() {
 ////////                    Puzzle Functions                        //////////
 /****************************************************************************/
 void resetPuzzleVar() {
-    extern int curRow, curCol, winPuzzle, GraceCount, wrongConfirmation;
-    curRow = 0; curCol = 0; winPuzzle = 0; GraceCount = 3, wrongConfirmation;
+    extern int curRow, curCol, winPuzzle, GraceCounter, errorConfirmation;
+    curRow = 0; curCol = 0; winPuzzle = 0; GraceCounter = 3, errorConfirmation = 0;
 }
 
 //Show User Predetermined Map
 void displayPuzzle(char userMap[9][9]) {
-    extern int winPuzzle, GraceCount;
+    extern int winPuzzle, GraceCounter;
     string instructions[] = { "Move Up - [W]", "Move Left - [A]", "Move Down - [S]", "Move Right - [D]", "Insert Number - [I]", "Confirm Answer - [C]"};
     for (int row = 0; row < 9; row++) {
         for (int col = 0; col < 9; col++) {
@@ -146,20 +148,29 @@ void displayPuzzle(char userMap[9][9]) {
     }
     cout << endl;
     
-    if (wrongConfirmation == 1) {
+    //Error Types
+    if (errorConfirmation == 1) {//User Answer does not match Puzzle Answer
         cout << "Wrong Answer! Please Try Again.\n\n";
-        wrongConfirmation = 0;
+        errorConfirmation = 0;
+    }
+    else if (errorConfirmation == 2) { //User Enters in invalid input during instruction
+        cout << "Error 1: Invalid input! - Please enter in the available options.\n\n";
+        errorConfirmation = 0;
+    }
+    else if (errorConfirmation == 3) { //User Enters in invalid character
+        cout << "Error 2: Invalid character type! - Please enter in a valid integer.\n\n";
+        errorConfirmation = 0;
     }
 
     for (int i = 0; i < sizeof(instructions) / sizeof(string); i++) {
         cout << instructions[i] << endl;
     }
-    cout << "GraceCount: " << GraceCount;
+    cout << "GraceCount: " << GraceCounter;
     cout << endl;
 }
 
 //Check User Answers for any errors
-void puzzleValidation(char userMap[9][9], const char puzzleAns[9][9]) {
+void puzzleValidation(char userConfirmAns[9][9], const char puzzleAns[9][9]) {
     extern int winPuzzle; 
     int gridCorrect = 0;
 
@@ -167,7 +178,7 @@ void puzzleValidation(char userMap[9][9], const char puzzleAns[9][9]) {
     for (int row = 0; row < 9; row++) {
         for (int col = 0; col < 9; col++) {
             //Check if the element player inputted matches the sudoku element answer
-            if (userMap[row][col] == puzzleAns[row][col]) {
+            if (userConfirmAns[row][col] == puzzleAns[row][col]) {
                 gridCorrect++;
                 continue;
             }
@@ -183,22 +194,25 @@ void puzzleValidation(char userMap[9][9], const char puzzleAns[9][9]) {
     }
 }
 
-void userControl(char userMap[9][9], char userAns[9][9], const char puzzleAns[9][9]) {
-    extern int curRow, curCol, winPuzzle, GraceCount, wrongConfirmation;
+void userControl(char userDisplay[9][9], char userAns[9][9], const char puzzleAns[9][9]) {
+    extern int curRow, curCol, winPuzzle, GraceCounter, errorConfirmation;
+    char userSudokuMap[9][9];
+
     resetPuzzleVar();
 
     for (int row = 0; row < 9; row++) {
         for (int col = 0; col < 9; col++) {
-            userMap[row][col] = userAns[row][col];
+            userSudokuMap[row][col] = userAns[row][col];
+            userDisplay[row][col] = userSudokuMap[row][col];
         }
     }
 
     while (true) {
         string userInput; char userInNum;
         int preRow = curRow; int preCol = curCol;
-        userMap[curRow][curCol] = 'X';
+        userDisplay[curRow][curCol] = 'X';
 
-        if (GraceCount == 0) {
+        if (GraceCounter <= -1) {
             winPuzzle = -1;
             clearscr();
             cout << "You lost the Sudoku!\n";
@@ -237,14 +251,19 @@ void userControl(char userMap[9][9], char userAns[9][9], const char puzzleAns[9]
         else if (userInput == "i") {
             cout << endl << "Please Insert a number: ";
             cin >> userInNum;
-            userAns[curRow][curCol] = userInNum;
-            if (userAns[curRow][curCol] != puzzleAns[curRow][curCol]) {
-                GraceCount -= 1;
+            if (userInNum != '1' && userInNum != '2' && userInNum != '3' && userInNum != '4' && userInNum != '5' && userInNum != '6' && userInNum != '7' && userInNum != '8' && userInNum != '9') {
+                errorConfirmation = 3;
+            }
+            else {
+                userSudokuMap[curRow][curCol] = userInNum;
+                if (userSudokuMap[curRow][curCol] != puzzleAns[curRow][curCol]) {
+                    GraceCounter -= 1;
+                }
             }
         }
         //Confirm Answer
         else if (userInput == "c") {
-            puzzleValidation(userAnsNoX, ::puzzleEA1);
+            puzzleValidation(userSudokuMap, ::puzzleEA1);
             if (winPuzzle == 1) {
                 clearscr();
                 cout << "You Win the Sudoku!\n";
@@ -252,14 +271,14 @@ void userControl(char userMap[9][9], char userAns[9][9], const char puzzleAns[9]
                 break;
             }
             else {
-                wrongConfirmation = 1;
+                errorConfirmation = 1;
             }
         }
         else {
-            cout << "Error Input!";
+            errorConfirmation = 2;
         }
         clearscr();
-        userMap[preRow][preCol] = userAns[preRow][preCol]; 
+        userDisplay[preRow][preCol] = userSudokuMap[preRow][preCol];
     };
 }
 
@@ -291,7 +310,7 @@ int main()
                 //Check Difficulty Selection
                 if (*diffSelect == "1") {
                     cout << msg << "\n" << Difficulty[0] << "\n\n";
-                    userControl(userGrid, ::userAnsNoX, puzzleEA1);
+                    userControl(userGrid, ::puzzleEU1, puzzleEA1);
                 }
                 else if (*diffSelect == "2") {
                     cout << msg << "\n" << Difficulty[1] << "\n\n";
@@ -325,24 +344,18 @@ int main()
 }
 
 //1. Organise and Clean Junk Code
-//2. Fix Error Message if wrong answer
-//3. Fix Error Message if invalid input
-//4. Implement Reset feature after winning
-//4.1.Use pointers to create new array.
-//4.2.Find a way to revert array to normal.
-//5. Add hints feature[Up to 3 tries]
-//6. Add mistake grace counter[Up to 5 mistakes].
-//6.1 Add instant game over if MGC > 5.
+//4. Implement Reset feature after winning [Somewhat DONE] 
+//4.1.Use pointers to create new array. [idk if possible?]
+//4.2.Find a way to revert array to normal. [idk if possible?]
+//5. Add hints feature [Up to 3 tries] 
 //7. Add more puzzles.
 
+//DONE TASKS
+//2. Fix Error Message if wrong answer [DONE]
+//3. Fix Error Message if invalid input [DONE]
+//6. Add mistake grace counter[Up to 5 mistakes]. [DONE]
+//6.1 Add instant game over if MGC > 5. [DONE]
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
 
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
