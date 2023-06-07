@@ -5,6 +5,7 @@
 #include <cmath>
 #include <string>
 #include <iostream>
+#include <vector>
 #include <ios> 
 #include <limits> 
 #include <stdlib.h>
@@ -26,7 +27,7 @@ string F1, F2;
 int curRow = 0;  int curCol = 0;
 
 //Win Condition Variable
-int winPuzzle; int GraceCounter; int errorConfirmation;
+int winPuzzle; int GraceCounter; int error;
 
 
 /****************************************************************************/
@@ -34,105 +35,43 @@ int winPuzzle; int GraceCounter; int errorConfirmation;
 /****************************************************************************/
 
 //Answer Arrays
-const char puzzleEA1[9][9]{ {'2','1','5','3','7','9','8','6','4'},
-                            {'9','8','6','1','2','4','3','5','7'},
-                            {'7','3','4','8','5','6','2','1','9'},
-                            {'4','5','2','7','8','1','6','9','3'},
-                            {'8','6','9','5','4','3','1','7','2'},
-                            {'3','7','1','6','9','2','4','8','5'},
-                            {'5','2','7','4','1','8','9','3','6'},
-                            {'6','4','8','9','3','7','5','2','1'},
-                            {'1','9','3','2','6','5','7','4','8'} };
 
-const char puzzleEA2[9][9]{ {'8','7','6','4','9','3','2','5','1'},
-                            {'3','4','5','7','1','2','9','6','8'},
-                            {'2','9','1','5','6','8','4','7','3'},
-                            {'9','8','2','1','3','5','7','4','6'},
-                            {'7','5','4','8','2','6','3','1','9'},
-                            {'1','6','3','9','4','7','8','2','5'},
-                            {'4','1','7','3','5','9','6','8','2'},
-                            {'6','3','8','2','7','1','5','9','4'},
-                            {'5','2','9','6','8','4','1','3','7'} };
+int puzzleInitEA1[9][9]{ {2,0,5,0,0,9,0,0,4},
+                         {0,0,0,0,0,0,3,0,7},
+                         {7,0,0,8,5,6,0,1,0},
+                         {4,5,0,7,0,0,0,0,0},
+                         {0,0,9,0,0,0,1,0,0},
+                         {0,0,0,0,0,2,0,8,5},
+                         {0,2,0,4,1,8,0,0,6},
+                         {6,0,8,0,0,0,0,0,0},
+                         {1,0,0,2,0,0,7,0,8} };
 
-const char puzzleEA3[9][9]{ {'1','6','5','8','4','7','9','2','3'},
-                            {'7','8','9','3','1','2','5','4','6'},
-                            {'4','3','2','5','9','6','1','7','8'},
-                            {'2','9','7','4','6','3','8','5','1'},
-                            {'5','1','8','7','2','9','3','6','4'},
-                            {'3','4','6','1','5','8','2','9','7'},
-                            {'9','7','3','2','8','4','6','1','5'},
-                            {'8','2','1','6','7','5','4','3','9'},
-                            {'6','5','4','9','3','1','7','8','2'} };
+int puzzleInitEA2[9][9]{ {0,0,6,0,9,0,2,0,0},
+                         {0,0,0,7,0,2,0,0,0},
+                         {0,9,0,5,0,8,0,7,0},
+                         {9,0,0,0,3,0,0,0,6},
+                         {7,5,0,0,0,0,0,1,9},
+                         {1,0,0,0,4,0,0,0,5},
+                         {0,1,0,3,0,9,0,8,0},
+                         {0,0,0,2,0,1,0,0,0},
+                         {0,0,9,0,8,0,1,0,0} };
 
-//Initialise Arrays
-const char userAnsNo1init[9][9]{ {'2','-','5','3','7','9','8','6','4'},
-                                 {'9','8','6','1','2','4','3','5','7'},
-                                 {'7','3','4','8','5','6','2','1','9'},
-                                 {'4','5','2','7','8','1','6','9','3'},
-                                 {'8','6','9','5','4','3','1','7','2'},
-                                 {'3','7','1','6','9','2','4','8','5'},
-                                 {'5','2','7','4','1','8','9','3','6'},
-                                 {'6','4','8','9','3','7','5','2','1'},
-                                 {'1','9','3','2','6','5','7','4','8'} };
+int puzzleInitEA3[9][9]{{0,0,0,8,0,0,0,0,0},
+                        {7,8,9,0,1,0,0,0,6},
+                        {0,0,0,0,0,6,1,0,0},
+                        {0,0,7,0,0,0,0,5,0},
+                        {5,0,8,7,0,9,3,0,4},
+                        {0,4,0,0,0,0,2,0,0},
+                        {0,0,3,2,0,0,0,0,0},
+                        {8,0,0,0,7,0,4,3,9},
+                        {0,0,0,0,0,1,0,0,0} };
 
-const char userAnsNo2init[9][9]{ {'-','-','6','-','9','-','2','-','-'},
-                                 {'-','-','-','7','-','2','-','-','-'},
-                                 {'-','9','-','5','-','8','-','7','-'},
-                                 {'9','-','-','-','3','-','-','-','6'},
-                                 {'7','5','-','-','-','-','-','1','9'},
-                                 {'1','-','-','-','4','-','-','-','5'},
-                                 {'-','1','-','3','-','9','-','8','-'},
-                                 {'-','-','-','2','-','1','-','-','-'},
-                                 {'-','-','9','-','8','-','1','-','-'} };
-
-//const char userAnsNo2init[9][9]{ {'8','7','-','4','9','3','2','5','1'},
-//                                 {'3','-','5','7','1','2','9','6','8'},
-//                                 {'2','9','1','5','6','8','4','7','3'},
-//                                 {'9','8','2','1','3','5','7','4','6'},
-//                                 {'7','5','4','8','2','6','3','1','9'},
-//                                 {'1','6','3','9','4','7','8','2','5'},
-//                                 {'4','1','7','3','5','9','6','8','2'},
-//                                 {'6','3','8','2','7','1','5','9','4'},
-//                                 {'5','2','9','6','8','4','1','3','7'} };
-
-
-
-const char userAnsNo3init[9][9]{ {'-','6','5','8','4','7','9','2','3'},
-                                 {'7','8','9','3','1','-','5','4','6'},
-                                 {'4','-','2','5','9','6','1','7','8'},
-                                 {'2','9','7','4','6','3','8','5','1'},
-                                 {'5','1','8','7','2','9','3','6','4'},
-                                 {'3','4','6','1','5','8','2','9','7'},
-                                 {'9','7','3','2','8','4','6','1','5'},
-                                 {'8','2','1','6','7','5','4','3','9'},
-                                 {'6','5','4','9','3','1','7','8','2'} };
-
-//const char userAnsNo1init[9][9]{ {'2','-','5','-','-','9','-','-','4'},
-//                                 {'-','-','-','-','-','-','3','-','7'},
-//                                 {'7','-','-','8','5','6','-','1','-'},
-//                                 {'4','5','-','7','-','-','-','-','-'},
-//                                 {'-','-','9','-','-','-','1','-','-'},
-//                                 {'-','-','-','-','-','2','-','8','5'},
-//                                 {'-','2','-','4','1','8','-','-','6'},
-//                                 {'6','-','8','-','-','-','-','-','-'},
-//                                 {'1','-','-','2','-','-','7','-','8'} };
-
-
-
-
-
-//const char userAnsNo3init[9][9]{ {'-','-','-','8','-','-','-','-','-'},
-//                                 {'7','8','9','-','1','-','-','-','6'},
-//                                 {'-','-','-','-','-','6','1','-','-'},
-//                                 {'-','-','7','-','-','-','-','5','-'},
-//                                 {'5','-','8','7','-','9','3','-','4'},
-//                                 {'-','4','-','-','-','-','2','-','-'},
-//                                 {'-','-','3','2','-','-','-','-','-'},
-//                                 {'8','-','-','-','7','-','4','3','9'},
-//                                 {'-','-','-','-','-','1','-','-','-'} };
-
+//Copied Arrays
 char userGrid[9][9];
 
+int  solveIntPuzzle[9][9];
+int  IntAnsGrid[9][9];
+char CharAnsGrid[9][9];
 
 
 
@@ -141,8 +80,30 @@ char userGrid[9][9];
 ////////                        Functions                           //////////
 /****************************************************************************/
 /****************************************************************************/
+void copyIntArr(int unsolvedPuzzle[9][9], int PuzzleCopy[9][9]) {
+    for (int row = 0; row < 9; row++) {
+        for (int col = 0; col < 9; col++) {
+            PuzzleCopy[row][col] = unsolvedPuzzle[row][col];
+        }
+    }
+}
 
-//Print Functions 
+//Convert Int Grid to Char Grid
+//Used for initialising and answer grid
+void convertIntToCharGrid(const int IntGrid[9][9], char CharGrid[9][9]) {
+        const int numCheck[10] = { 0,1,2,3,4,5,6,7,8,9 };
+        const char convertNum[10] = { '-','1','2','3','4','5','6','7','8','9' };
+
+        for (int r = 0; r < 9; r++) {
+            for (int c = 0; c < 9; c++) {
+                for (int numIt = 0; numIt < 10; numIt++) {
+                    if (IntGrid[r][c] == numCheck[numIt]) {
+                        CharGrid[r][c] = convertNum[numIt];
+                    }
+                }
+            }
+        }
+}
 
 /****************************************************************************/
 ////////                    Decision Functions                      //////////
@@ -193,7 +154,10 @@ void tutorial() {
                               "\n1. Navigate through the grids by entering [W,A,S,D] keys into the screen.",
                               "\n2. Enter [I] to insert a value into the selected grid.",
                               "\n3. Enter a number into the selected grid.",
-                              "\n4. Repeat step 1-3 until all grids are filled.\n\n",};
+                              "\n4. Repeat step 1-3 until all grids are filled.",
+                              "\n5. Enter [C] to confirm your answers."
+                              "\n6. Try not to make as much mistakes as possible! You have only 3 grace counts in total.\n\n" };
+                               
 
     for (int i = 0; i < sizeof(instructions) / sizeof(string); i++) {
         cout << instructions[i];
@@ -206,53 +170,169 @@ void tutorial() {
 
 
 /****************************************************************************/
-////////                    Puzzle Functions                        //////////
+////////                    Sub Puzzle Functions                    //////////
 /****************************************************************************/
 void resetPuzzleVar() {
-    extern int curRow, curCol, winPuzzle, GraceCounter, errorConfirmation;
-    curRow = 0; curCol = 0; winPuzzle = 0; GraceCounter = 3, errorConfirmation = 0;
+    extern int curRow, curCol, winPuzzle, GraceCounter, error;
+    curRow = 0; curCol = 0; winPuzzle = 0; GraceCounter = 3, error = 0;
 }
 
-//Show User Predetermined Map
-void displayPuzzle(char userMap[9][9]) {
-    extern int winPuzzle, GraceCounter;
-    string instructions[] = { "Move Up - [W]", "Move Left - [A]", "Move Down - [S]", "Move Right - [D]", "Insert Number - [I]", "Confirm Answer - [C]"};
+void prtGrid(char Grid9x9[9][9]) {
     for (int row = 0; row < 9; row++) {
         if (row == 3 || row == 6) {
             cout << "---------------------" << endl;
         }
         for (int col = 0; col < 9; col++) {
-            if (col == 2 || col == 5){ 
-                cout << userMap[row][col] << " | "; 
+            if (col == 2 || col == 5) {
+                cout << Grid9x9[row][col] << " | ";
             }
-            else { 
-                cout << userMap[row][col] << " "; 
+            else {
+                cout << Grid9x9[row][col] << " ";
             }
-            
+
         }
         cout << endl;
     }
     cout << endl;
-    
-    //Error Types
-    if (errorConfirmation == 1) {//User Answer does not match Puzzle Answer
+}
+
+void errorDetection() {
+    if (error == 1) {//User Answer does not match Puzzle Answer
         cout << "Wrong Answer! Please Try Again.\n\n";
-        errorConfirmation = 0;
+        error = 0;
     }
-    else if (errorConfirmation == 2) { //User Enters in invalid input during instruction
+    else if (error == 2) { //User Enters in invalid input during instruction
         cout << "Error 1: Invalid input! - Please enter in the available options.\n\n";
-        errorConfirmation = 0;
+        error = 0;
     }
-    else if (errorConfirmation == 3) { //User Enters in invalid character
+    else if (error == 3) { //User Enters in invalid character
         cout << "Error 2: Invalid character type! - Please enter in a valid integer.\n\n";
-        errorConfirmation = 0;
+        error = 0;
     }
-    else if (errorConfirmation == 4) { //Grid already occupied.
+    else if (error == 4) { //Grid already occupied.
         cout << "Error 3: Grid is already occupied.\n\n";
-        errorConfirmation = 0;
+        error = 0;
+    }
+}
+
+
+/****************************************************************************/
+////////                Auto Sudoku Solver Functions                     /////
+/****************************************************************************/
+
+//1. Keep Track of Numbers Used in Row, Column and Cell (Store 1-9)
+//2. Loop through Rows and Cols (9 * 9) until it finds a non-0. 
+//3. Prompt Algorithm which number is already used up. 
+//4. Pass off the information to Main Recursive Sudoku Function
+//5. Find a way to tell Algorithm that before curRow & curCol already solved and move forward
+//6. Find a way to tell when a row & col is a blank. Else next row/col
+//7. Check if num not used. Put Unused num on board and marked as used.
+//8. Check if everything is solved. If not, reset. 
+//9. If really cannot succeed, reset location and fail the function.
+//10. Stop recursive function after solving all cells.
+
+bool canPlace9x9(int puzzleInit[9][9], int row, int col, int n){
+    //Returns false if curRow and curCol is filled.
+    if (puzzleInit[row][col] != 0) return false;
+
+    bool CanPlace = true;
+    int gridx = (col / 3) * 3; 
+    int gridy = (row / 3) * 3;
+
+    //Check in its rows, cols, and cells if int number is used.
+    for (int i = 0; i < 9; i++) {
+        if (puzzleInit[row][i] == n) 
+        { CanPlace = false; break; }
+        if (puzzleInit[i][col] == n) 
+        { CanPlace = false; break; }
+        if (puzzleInit[gridy + i / 3][gridx + i % 3] == n) 
+        { CanPlace = false; break; }
+    }
+    return CanPlace;
+}
+
+//Find next empty rol, col cell.
+void nextEmptyCell(int puzzleInit[9][9], int row, int col, int& rowNext, int& colNext){
+
+    int indexNext = 9 * 9 + 1;
+    for (int i = row * 9 + col + 1; i < 9 * 9; i++) {
+        if (puzzleInit[i / 9][i % 9] == 0) {
+
+            indexNext = i;
+            break;
+        }
+    }
+    rowNext = indexNext / 9;
+    colNext = indexNext % 9;
+    //cout << row << "," << col << "|" << rowNext << "," << colNext << endl;
+}
+
+//Stores Integers that could be placed.
+std::vector<int> findPlaceables(int puzzleInit[9][9], int row, int col) {
+    std::vector<int> placebles = {};
+    //Updates the set if integer is not used in its unique row, col & cell.
+    for (int n = 1; n <= 9; n++)
+        if (canPlace9x9(puzzleInit, row, col, n)) placebles.push_back(n);
+    return placebles;
+}
+
+bool solveSudoku9x9(int puzzleInit[9][9], int row, int col)
+{
+    //system("cls");
+    //printSudoku9x9(puzzleInit);
+
+    if (row > 8) return true; //Stops the function after solving the last row.
+
+    //Check if current row and col cell is filled up.
+    if (puzzleInit[row][col] != 0) {
+        int rowNext, colNext;
+        nextEmptyCell(puzzleInit, row, col, rowNext, colNext); //Moves on to next empty cell
+        return solveSudoku9x9(puzzleInit, rowNext, colNext); //Recurses the SolveSudoku function to find the correct number possibility.
     }
 
+    //Get unused integers
+    std::vector<int> placebles = findPlaceables(puzzleInit, row, col);
 
+    //Immediately return false if there are no unused integers.
+    if (placebles.size() == 0) {
+
+        return false;
+
+    };
+
+    bool status = false;
+    
+    //Bruteforcing through num probability tree exploration
+    for (int i = 0; i < placebles.size(); i++) {
+        int n = placebles[i];
+        int arrCpy[9][9];
+        copyIntArr(puzzleInit, arrCpy);
+        //cout << "(" << row << "," << col << ") =>" << n << endl;
+        arrCpy[row][col] = n;
+        int rowNext = row;
+        int colNext = col;
+        nextEmptyCell(arrCpy, row, col, rowNext, colNext);
+
+        //If all the cells in its rows and col are unique, considered solved and returns true.
+        if (solveSudoku9x9(arrCpy, rowNext, colNext)) {
+            copyIntArr(arrCpy, puzzleInit);
+            status = true;
+            break;
+        }
+    }
+    return status;
+}
+
+
+
+/****************************************************************************/
+////////                    Main Puzzle Functions                    /////////
+/****************************************************************************/
+void displayPuzzle() {
+    extern int winPuzzle, GraceCounter;
+    prtGrid(::userGrid);
+    errorDetection();
+    string instructions[] = { "Move Up - [W]", "Move Left - [A]", "Move Down - [S]", "Move Right - [D]", "Insert Number - [I]", "Confirm Answer - [C]" };
     for (int i = 0; i < sizeof(instructions) / sizeof(string); i++) {
         cout << instructions[i] << endl;
     }
@@ -261,7 +341,7 @@ void displayPuzzle(char userMap[9][9]) {
 }
 
 //Check User Answers for any errors
-void puzzleValidation(char userConfirmAns[9][9], const char puzzleAns[9][9]) {
+void puzzleValidation(char userConfirmAns[9][9], char puzzleAns[9][9]) {
     extern int winPuzzle; 
     int gridCorrect = 0;
 
@@ -280,52 +360,37 @@ void puzzleValidation(char userConfirmAns[9][9], const char puzzleAns[9][9]) {
     };
 
     //Display victory message if all elements matches sudoku array
-    if (gridCorrect == 81) {
+    if (gridCorrect == 9 * 9) {
         winPuzzle = 1; 
     }
 }
 
-void sudokuAutoSolver(char userConfirmAns[9][9]) {
-    extern int winPuzzle; 
-    
-    for (int row = 0; row < 9; row++) {
-        for (int col = 0; col < 9; col++) {
-
-        }
-    }
-
-    //Auto Solve Initial Sudoku Puzzle 
-    //Copy answer to Global Array
-    //Use it to check against user answer
-    
-    //Check for unique numbers in 3x3 grid
-    //Map[0][0] Map [1][0] Map[2][0]
-    //Map[0][1] Map [1][1] Map[2][1]
-    //Map[0][2] Map [1][2] Map[2][2]
-
-    //Replicate Unique Test Across 9 3x3 grids;
-
-    //If fail, trip error. Else, Win game. 
-
-}
-
-void userControl(char userDisplay[9][9], const char puzzleInit[9][9], const char puzzleAns[9][9]) {
-    extern int curRow, curCol, winPuzzle, GraceCounter, errorConfirmation;
+void userControl(char Grid9x9[9][9], int InitialisePuzzle[9][9]) {
+    extern int curRow, curCol, winPuzzle, GraceCounter, error;
     char userSudokuMap[9][9];
+
+    convertIntToCharGrid(InitialisePuzzle, userSudokuMap);
     resetPuzzleVar();
 
     //Copies Puzzle Initial Array into New Empty Array
     for (int row = 0; row < 9; row++) {
         for (int col = 0; col < 9; col++) {
-            userSudokuMap[row][col] = puzzleInit[row][col];
-            userDisplay[row][col] = userSudokuMap[row][col];
+            Grid9x9[row][col] = userSudokuMap[row][col];
         }
     }
+
+
+    //Find and solve sudoku answer in real time
+    copyIntArr(InitialisePuzzle, solveIntPuzzle);
+    solveSudoku9x9(solveIntPuzzle, 0, 0);
+    copyIntArr(solveIntPuzzle, IntAnsGrid);
+    convertIntToCharGrid(IntAnsGrid, CharAnsGrid);
+
 
     while (true) {
         string userInput; char userInNum;
         int preRow = curRow; int preCol = curCol;
-        userDisplay[curRow][curCol] = 'X';
+        Grid9x9[curRow][curCol] = 'X';
 
         if (GraceCounter <= -1) {
             winPuzzle = -1;
@@ -335,7 +400,8 @@ void userControl(char userDisplay[9][9], const char puzzleInit[9][9], const char
             break;
         }
 
-        displayPuzzle(userGrid);
+        displayPuzzle();
+
         cout << "You are currently at row: " << curRow << ", col : " << curCol << endl << "Input : ";
         cin >> userInput;
         
@@ -379,12 +445,12 @@ void userControl(char userDisplay[9][9], const char puzzleInit[9][9], const char
                 //If Input is Integer
                 if (isValid) {
                     if (userSudokuMap[curRow][curCol] != '-') { //Check if grid is already occupied.
-                        errorConfirmation = 4;
+                        error = 4;
                         break;
                     }
                     else { 
                         userSudokuMap[curRow][curCol] = userInNum;
-                        if (userSudokuMap[curRow][curCol] != puzzleAns[curRow][curCol]) { //Checks if User inputs wrong number.
+                        if (userSudokuMap[curRow][curCol] != CharAnsGrid[curRow][curCol]) { //Checks if User inputs wrong number.
                             userSudokuMap[curRow][curCol] = '-';
                             GraceCounter -= 1;
                             break;
@@ -393,7 +459,7 @@ void userControl(char userDisplay[9][9], const char puzzleInit[9][9], const char
                 }
                 //If Input is NOT integer
                 else {
-                    errorConfirmation = 3;
+                    error = 3;
                     break;
                 }
             }
@@ -401,7 +467,7 @@ void userControl(char userDisplay[9][9], const char puzzleInit[9][9], const char
 
         //Confirm Answer
         else if (userInput == "c") {
-            puzzleValidation(userSudokuMap, puzzleAns);
+            puzzleValidation(userSudokuMap, CharAnsGrid);
             if (winPuzzle == 1) {
                 clearscr();
                 cout << "You Win the Sudoku!\n";
@@ -409,14 +475,14 @@ void userControl(char userDisplay[9][9], const char puzzleInit[9][9], const char
                 break;
             }
             else {
-                errorConfirmation = 1;
+                error = 1;
             }
         }
         else {
-            errorConfirmation = 2;
+            error = 2;
         }
         clearscr();
-        userDisplay[preRow][preCol] = userSudokuMap[preRow][preCol];
+        Grid9x9[preRow][preCol] = userSudokuMap[preRow][preCol];
     };
 }
 
@@ -448,15 +514,15 @@ int main()
                 //Check Difficulty Selection
                 if (diffSelect == "1") {
                     cout << msg << "\n" << Difficulty[0] << "\n\n";
-                    userControl(userGrid, ::userAnsNo1init, puzzleEA1);
+                    userControl(userGrid, puzzleInitEA1);
                 }
                 else if (diffSelect == "2") {
                     cout << msg << "\n" << Difficulty[1] << "\n\n";
-                    userControl(userGrid, ::userAnsNo2init, puzzleEA2);
+                    userControl(userGrid, puzzleInitEA2);
                 }
                 else if (diffSelect == "3") {
                     cout << msg << "\n" << Difficulty[2] << "\n\n";
-                    userControl(userGrid, ::userAnsNo3init, puzzleEA3);
+                    userControl(userGrid, puzzleInitEA3);
                 }
                 else if (diffSelect == "q") {
                     cout << "Exit Loop";
@@ -483,24 +549,8 @@ int main()
 }
 
 //1. Organise and Clean Junk Code
-//4.1.Use pointers to create new array. [idk if possible?]
-//4.2.Find a way to revert array to normal. [idk if possible?]
 //5. Add hints feature [Up to 3 tries] 
 
-//BONUS
-//1. Randomise Sudoku Puzzle
-//2. Randomise Sudoku Predetermined Grids
-//3. Servers?
-//4. More gamemodes ??
 
-//DONE TASKS
-//2. Fix Error Message if wrong answer [DONE]
-//3. Fix Error Message if invalid input [DONE]
-//4. Implement Reset feature after winning [DONE]
-//6. Add mistake grace counter[Up to 5 mistakes]. [DONE]
-//6.1 Add instant game over if MGC > 5. [DONE]
-//7. Add more puzzles. [DONE]
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
 
