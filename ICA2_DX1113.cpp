@@ -34,8 +34,39 @@ int winPuzzle; int GraceCounter; int error;
 ////////                      Sudoku Puzzles                        //////////
 /****************************************************************************/
 
-//Answer Arrays
 
+//For Debugging & Demo
+int puzzleEA1[9][9]{    { 2,1,5,3,7,9,8,6,4 }, 
+                        { 9,8,6,1,2,4,3,5,7 },
+                        { 7,3,4,8,5,6,2,1,9 },
+                        { 4,5,2,7,8,1,6,9,3 },
+                        { 8,6,9,5,4,3,1,7,2 }, 
+                        { 3,7,1,6,9,2,4,8,5 }, 
+                        { 5,2,7,4,1,8,9,3,6 },
+                        { 6,4,8,9,3,7,5,2,1 },
+                        { 1,9,3,2,6,5,7,4,8 } };
+
+int puzzleEA2[9][9]{    {8,7,6,4,9,3,2,5,1},
+                        {3,4,5,7,1,2,9,6,8},
+                        {2,9,1,5,6,8,4,7,3},
+                        {9,8,2,1,3,5,7,4,6},
+                        {7,5,4,8,2,6,3,1,9},
+                        {1,6,3,9,4,7,8,2,5},
+                        {4,1,7,3,5,9,6,8,2},
+                        {6,3,8,2,7,1,5,9,4},
+                        {5,2,9,6,8,4,1,3,7} };
+
+int puzzleEA3[9][9]{  {1,6,5,8,4,7,9,2,3},
+                      {7,8,9,3,1,2,5,4,6},
+                      {4,3,2,5,9,6,1,7,8},
+                      {2,9,7,4,6,3,8,5,1},
+                      {5,1,8,7,2,9,3,6,4},
+                      {3,4,6,1,5,8,2,9,7},
+                      {9,7,3,2,8,4,6,1,5},
+                      {8,2,1,6,7,5,4,3,9},
+                      {6,5,4,9,3,1,7,8,2} };
+
+//Initialise Puzzle Arrays
 int puzzleInitEA1[9][9]{ {2,0,5,0,0,9,0,0,4},
                          {0,0,0,0,0,0,3,0,7},
                          {7,0,0,8,5,6,0,1,0},
@@ -217,115 +248,6 @@ void errorDetection() {
 
 
 /****************************************************************************/
-////////                Auto Sudoku Solver Functions                     /////
-/****************************************************************************/
-
-//1. Keep Track of Numbers Used in Row, Column and Cell (Store 1-9)
-//2. Loop through Rows and Cols (9 * 9) until it finds a non-0. 
-//3. Prompt Algorithm which number is already used up. 
-//4. Pass off the information to Main Recursive Sudoku Function
-//5. Find a way to tell Algorithm that before curRow & curCol already solved and move forward
-//6. Find a way to tell when a row & col is a blank. Else next row/col
-//7. Check if num not used. Put Unused num on board and marked as used.
-//8. Check if everything is solved. If not, reset. 
-//9. If really cannot succeed, reset location and fail the function.
-//10. Stop recursive function after solving all cells.
-
-bool canPlace9x9(int puzzleInit[9][9], int row, int col, int n){
-    //Returns false if curRow and curCol is filled.
-    if (puzzleInit[row][col] != 0) return false;
-
-    bool CanPlace = true;
-    int gridx = (col / 3) * 3; 
-    int gridy = (row / 3) * 3;
-
-    //Check in its rows, cols, and cells if int number is used.
-    for (int i = 0; i < 9; i++) {
-        if (puzzleInit[row][i] == n) 
-        { CanPlace = false; break; }
-        if (puzzleInit[i][col] == n) 
-        { CanPlace = false; break; }
-        if (puzzleInit[gridy + i / 3][gridx + i % 3] == n) 
-        { CanPlace = false; break; }
-    }
-    return CanPlace;
-}
-
-//Find next empty rol, col cell.
-void nextEmptyCell(int puzzleInit[9][9], int row, int col, int& rowNext, int& colNext){
-
-    int indexNext = 9 * 9 + 1;
-    for (int i = row * 9 + col + 1; i < 9 * 9; i++) {
-        if (puzzleInit[i / 9][i % 9] == 0) {
-
-            indexNext = i;
-            break;
-        }
-    }
-    rowNext = indexNext / 9;
-    colNext = indexNext % 9;
-    //cout << row << "," << col << "|" << rowNext << "," << colNext << endl;
-}
-
-//Stores Integers that could be placed.
-std::vector<int> findPlaceables(int puzzleInit[9][9], int row, int col) {
-    std::vector<int> placebles = {};
-    //Updates the set if integer is not used in its unique row, col & cell.
-    for (int n = 1; n <= 9; n++)
-        if (canPlace9x9(puzzleInit, row, col, n)) placebles.push_back(n);
-    return placebles;
-}
-
-bool solveSudoku9x9(int puzzleInit[9][9], int row, int col)
-{
-    //system("cls");
-    //printSudoku9x9(puzzleInit);
-
-    if (row > 8) return true; //Stops the function after solving the last row.
-
-    //Check if current row and col cell is filled up.
-    if (puzzleInit[row][col] != 0) {
-        int rowNext, colNext;
-        nextEmptyCell(puzzleInit, row, col, rowNext, colNext); //Moves on to next empty cell
-        return solveSudoku9x9(puzzleInit, rowNext, colNext); //Recurses the SolveSudoku function to find the correct number possibility.
-    }
-
-    //Get unused integers
-    std::vector<int> placebles = findPlaceables(puzzleInit, row, col);
-
-    //Immediately return false if there are no unused integers.
-    if (placebles.size() == 0) {
-
-        return false;
-
-    };
-
-    bool status = false;
-    
-    //Bruteforcing through num probability tree exploration
-    for (int i = 0; i < placebles.size(); i++) {
-        int n = placebles[i];
-        int arrCpy[9][9];
-        copyIntArr(puzzleInit, arrCpy);
-        //cout << "(" << row << "," << col << ") =>" << n << endl;
-        arrCpy[row][col] = n;
-        int rowNext = row;
-        int colNext = col;
-        nextEmptyCell(arrCpy, row, col, rowNext, colNext);
-
-        //If all the cells in its rows and col are unique, considered solved and returns true.
-        if (solveSudoku9x9(arrCpy, rowNext, colNext)) {
-            copyIntArr(arrCpy, puzzleInit);
-            status = true;
-            break;
-        }
-    }
-    return status;
-}
-
-
-
-/****************************************************************************/
 ////////                    Main Puzzle Functions                    /////////
 /****************************************************************************/
 void displayPuzzle() {
@@ -365,7 +287,7 @@ void puzzleValidation(char userConfirmAns[9][9], char puzzleAns[9][9]) {
     }
 }
 
-void userControl(char Grid9x9[9][9], int InitialisePuzzle[9][9]) {
+void userControl(char Grid9x9[9][9], int InitialisePuzzle[9][9], int PuzzleAnswer[9][9]) {
     extern int curRow, curCol, winPuzzle, GraceCounter, error;
     char userSudokuMap[9][9];
 
@@ -380,12 +302,8 @@ void userControl(char Grid9x9[9][9], int InitialisePuzzle[9][9]) {
     }
 
 
-    //Find and solve sudoku answer in real time
-    copyIntArr(InitialisePuzzle, solveIntPuzzle);
-    solveSudoku9x9(solveIntPuzzle, 0, 0);
-    copyIntArr(solveIntPuzzle, IntAnsGrid);
-    convertIntToCharGrid(IntAnsGrid, CharAnsGrid);
-
+    //Convert Int Array to Char Array
+    convertIntToCharGrid(PuzzleAnswer, CharAnsGrid);
 
     while (true) {
         string userInput; char userInNum;
@@ -514,15 +432,15 @@ int main()
                 //Check Difficulty Selection
                 if (diffSelect == "1") {
                     cout << msg << "\n" << Difficulty[0] << "\n\n";
-                    userControl(userGrid, puzzleInitEA1);
+                    userControl(userGrid, puzzleInitEA1, puzzleEA1);
                 }
                 else if (diffSelect == "2") {
                     cout << msg << "\n" << Difficulty[1] << "\n\n";
-                    userControl(userGrid, puzzleInitEA2);
+                    userControl(userGrid, puzzleInitEA2, puzzleEA2);
                 }
                 else if (diffSelect == "3") {
                     cout << msg << "\n" << Difficulty[2] << "\n\n";
-                    userControl(userGrid, puzzleInitEA3);
+                    userControl(userGrid, puzzleInitEA3, puzzleEA3);
                 }
                 else if (diffSelect == "q") {
                     cout << "Exit Loop";
